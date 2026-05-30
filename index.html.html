@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A1A1A">
+<title>W SOCIETY — The Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ CSS RESET & BASE ═══ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body, html { 
+  width: 100%; 
+  background: #1A1A1A; 
+  color: #F7F3EB; 
+  font-family: 'Inter', sans-serif; 
+  overflow-x: hidden; 
+  scroll-behavior: smooth;
+}
+
+/* ═══ CINEMATIC GRAIN ═══ */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ═══ TYPOGRAPHY TOKENS ═══ */
+.font-cinema { font-family: 'Anton', sans-serif; text-transform: uppercase; line-height: 0.85; }
+.font-serif { font-family: 'Cormorant Garamond', serif; }
+.font-mono { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; }
+
+/* ═══ UTILS ═══ */
+.text-accent { color: #F7F3EB; } /* Warm cream */
+.text-grey { color: #888; }
+.text-white { color: #F7F3EB; }
+
+/* ═══ HUD (HEADS UP DISPLAY) ═══ */
+.hud { 
+  position: fixed; 
+  z-index: 100; 
+  color: white; 
+  padding: 2.5vw; 
+  width: 100%; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: flex-start; 
+  pointer-events: none; 
+}
+.hud::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 150px;
+  background: linear-gradient(to bottom, rgba(26,26,26,0.9), transparent);
+  z-index: -1; pointer-events: none;
+}
+.hud-item { pointer-events: auto; }
+.hud-title { font-size: clamp(20px, 2vw, 32px); font-family: 'Cormorant Garamond', serif; letter-spacing: 0.1em; font-weight: 600; }
+.hud-meta { display: flex; flex-direction: column; gap: 4px; text-align: right; }
+.apply-btn { 
+  background: none; 
+  border: 1px solid rgba(247,243,235,0.2); 
+  color: #F7F3EB; 
+  padding: 12px 24px; 
+  font-family: 'Inter'; 
+  font-size: 10px; 
+  letter-spacing: 0.2em; 
+  text-transform: uppercase; 
+  cursor: pointer; 
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+  text-decoration: none; 
+  display: inline-block; 
+}
+.apply-btn:hover { background: #234F3D; color: #F7F3EB; border-color: #234F3D; }
+
+/* ═══ SCROLL PROGRESS BAR ═══ */
+.progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 2px; background: #234F3D; z-index: 1000; }
+
+/* ═══ LAYOUT SECTIONS ═══ */
+section { min-height: 100vh; padding: 15vh 5vw; display: flex; flex-direction: column; justify-content: center; position: relative; }
+
+/* ═══ 01. HERO ═══ */
+.hero { align-items: center; text-align: center; overflow: hidden; padding-top: 25vh; }
+.hero-title { font-size: 22vw; white-space: nowrap; letter-spacing: -0.01em; transform: scaleY(1.15); margin-bottom: 2vh; }
+.hero-sub { font-size: clamp(24px, 4vw, 56px); font-weight: 300; font-style: italic; color: rgba(247,243,235,0.55); }
+.hero-stamp { position: absolute; bottom: 8vh; left: 5vw; display: flex; align-items: center; gap: 2vw; }
+.hero-stamp-line { width: 5vw; height: 1px; background: #333; }
+
+/* ═══ KINETIC MARQUEE ═══ */
+.marquee-container { width: 100vw; overflow: hidden; margin-left: -5vw; padding: 6vh 0; white-space: nowrap; border-top: 1px solid #2a2a2a; border-bottom: 1px solid #2a2a2a; }
+.marquee { display: inline-block; font-size: 10vw; font-family: 'Cormorant Garamond', serif; font-style: italic; animation: marquee 40s linear infinite; color: #2d2d2d; letter-spacing: -0.02em; }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* ═══ 02. THE PROBLEM ═══ */
+.split-section { display: grid; grid-template-columns: 1fr 2.5fr; gap: 6vw; align-items: center; }
+.split-left { text-align: right; border-right: 1px solid #2a2a2a; padding-right: 6vw; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+.split-right { max-width: 1000px; }
+.huge-quote { font-size: clamp(36px, 6vw, 90px); line-height: 1.05; font-family: 'Cormorant Garamond', serif; letter-spacing: -0.02em; color: #F7F3EB; }
+.huge-quote span.text-accent { color: #F7F3EB; font-style: italic; font-weight: 400; }
+
+/* CINEMATIC TYPOGRAPHY ANIMATION */
+.cinematic-quote { perspective: 1000px; }
+.cinematic-quote .word { 
+  display: inline-block; 
+  opacity: 0; 
+  transform: translateY(40px) rotateX(-25deg); 
+  transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1), transform 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: bottom center;
+}
+.cinematic-quote.active .word {
+  opacity: 1;
+  transform: translateY(0) rotateX(0);
+}
+
+/* ═══ 03. IDENTITY & PILLARS ═══ */
+.act-header { font-size: 12vw; margin-bottom: 8vh; border-bottom: 1px solid #2a2a2a; padding-bottom: 2vh; letter-spacing: -0.02em; color: #F7F3EB; }
+.act-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1px; margin-top: 5vh; }
+.act-card { background: #141414; border: 1px solid #2a2a2a; padding: 4vw; transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.6s; cursor: default; position: relative; overflow: hidden; }
+.act-card:hover { background: #1A1A1A; }
+.act-num { font-family: 'Anton', sans-serif; font-size: clamp(60px, 8vw, 120px); color: #2a2a2a; line-height: 0.8; margin-bottom: 30px; transition: color 0.6s; }
+.act-card:hover .act-num { color: #F7F3EB; }
+.act-title { font-size: clamp(20px, 2vw, 28px); font-weight: 500; margin-bottom: 20px; letter-spacing: -0.02em; }
+.act-desc { font-family: 'Cormorant Garamond', serif; font-size: clamp(18px, 1.5vw, 22px); color: #888; line-height: 1.6; }
+
+/* ═══ 04. DEMOGRAPHIC ═══ */
+.audience-section { background: #141414; }
+.audience-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8vw; width: 100%; margin-top: 5vh; }
+.audience-col h3 { font-family: 'Anton', sans-serif; font-size: clamp(32px, 4vw, 56px); letter-spacing: 0.05em; margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+.audience-list { list-style: none; }
+.audience-list li { font-family: 'Inter', sans-serif; font-size: clamp(14px, 1.2vw, 18px); padding: 30px 0; border-bottom: 1px solid #111; color: #999; line-height: 1.6; }
+.audience-list li strong { font-family: 'Anton', sans-serif; font-size: clamp(20px, 1.8vw, 24px); color: #fff; display: block; margin-bottom: 10px; letter-spacing: 0.05em; font-weight: normal; transition: color 0.3s; }
+.audience-list.disqualify li { color: #555; }
+.audience-list.disqualify li strong { color: #555; text-decoration: line-through; }
+.audience-list.disqualify li:hover { color: #F7F3EB; }
+.audience-list.disqualify li:hover strong { color: #F7F3EB; text-decoration: none; }
+
+/* ═══ 05. THE STANDARD ═══ */
+.standard-section { border: 1px solid #1a1a1a; padding: 12vw 5vw; margin: 10vh 5vw; background: radial-gradient(circle at center, #1A1A1A 0%, #0A0A0A 80%); align-items: center; text-align: center; }
+.standard-title { font-size: 10vw; line-height: 0.9; margin-bottom: 50px; text-align: center; }
+
+/* ═══ 06. FORM / APPLICATION ═══ */
+.apply-section { align-items: center; background: #141414; padding-bottom: 20vh; }
+.form-container { width: 100%; max-width: 800px; margin-top: 8vh; border: 1px solid #2a2a2a; padding: clamp(30px, 5vw, 80px); background: #1A1A1A; position: relative; }
+.form-container::before { content: ''; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px; border-top: 2px solid #234F3D; border-left: 2px solid #234F3D; }
+.form-container::after { content: ''; position: absolute; bottom: -1px; right: -1px; width: 20px; height: 20px; border-bottom: 2px solid #234F3D; border-right: 2px solid #234F3D; }
+.form-group { margin-bottom: 50px; position: relative; }
+.form-group input, .form-group textarea { width: 100%; background: none; border: none; border-bottom: 1px solid #333; color: white; padding: 15px 0; font-family: 'Cormorant Garamond', serif; font-size: 28px; outline: none; transition: border-color 0.4s; resize: none; border-radius: 0; }
+.form-group input:focus, .form-group textarea:focus { border-bottom-color: #234F3D; }
+.form-group label { position: absolute; top: 18px; left: 0; font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #666; pointer-events: none; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.form-group input:focus ~ label, .form-group input:valid ~ label,
+.form-group textarea:focus ~ label, .form-group textarea:valid ~ label { top: -20px; font-size: 9px; color: #234F3D; }
+.submit-btn { width: 100%; padding: 30px; background: #F7F3EB; color: #1A1A1A; border: none; font-family: 'Anton', sans-serif; font-size: 28px; letter-spacing: 0.1em; cursor: pointer; transition: all 0.5s; margin-top: 20px; }
+.submit-btn:hover { background: #234F3D; color: #F7F3EB; letter-spacing: 0.2em; }
+
+/* ═══ FOOTER ═══ */
+footer { padding: 4vw 5vw; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1a1a1a; font-family: 'Inter'; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #444; background: #0A0A0A; }
+
+/* ═══ ANIMATIONS ═══ */
+.reveal { opacity: 0; transform: translateY(50px) scale(0.98); transition: all 1.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.reveal.active { opacity: 1; transform: translateY(0) scale(1); }
+.fade { opacity: 0; transition: opacity 2s ease; }
+.fade.active { opacity: 1; }
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+
+/* ═══ MOBILE RESPONSIVE ═══ */
+@media (max-width: 900px) {
+  .split-section { grid-template-columns: 1fr; gap: 4vw; }
+  .split-left { text-align: left; border-right: none; padding-right: 0; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 30px; }
+  .audience-grid { grid-template-columns: 1fr; gap: 60px; }
+  .hero-title { font-size: 24vw; }
+  .hud-title { font-size: 24px; }
+  .huge-quote { font-size: clamp(32px, 8vw, 48px); }
+  .act-header { font-size: 14vw; }
+}
+</style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- HUD -->
+<nav class="hud">
+  <!-- Removed "W SOCIETY" text as requested -->
+  <div class="hud-item hud-title"></div>
+  <div class="hud-item hud-meta">
+    <span class="font-mono text-grey">EST. 2026</span>
+    <span class="font-mono text-white">THE ROOM</span>
+    <a href="#apply" class="apply-btn" style="margin-top: 15px;">Submit Dossier</a>
+  </div>
+</nav>
+
+<!-- 01. HERO -->
+<section class="hero">
+  <h1 class="font-cinema hero-title reveal">W SOCIETY</h1>
+  <h2 class="font-serif hero-sub reveal delay-1">The Room You Were Looking For.</h2>
+  
+  <div class="hero-stamp reveal delay-3">
+    <span class="font-mono text-grey">SCROLL TO BEGIN</span>
+    <div class="hero-stamp-line"></div>
+    <span class="font-mono text-accent">A PRIVATE ECOSYSTEM</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-container fade">
+  <div class="marquee">
+    WRONG PEOPLE. WRONG CONVERSATIONS. WRONG STANDARDS. &nbsp;&nbsp;&nbsp; WRONG PEOPLE. WRONG CONVERSATIONS. WRONG STANDARDS. &nbsp;&nbsp;&nbsp; WRONG PEOPLE. WRONG CONVERSATIONS. WRONG STANDARDS. &nbsp;&nbsp;&nbsp;
+  </div>
+</div>
+
+<!-- 02. THE PROBLEM -->
+<section class="split-section" id="problem">
+  <div class="split-left reveal">
+    <div class="font-mono text-accent" style="margin-bottom: 20px;">01. THE PROBLEM</div>
+    <div class="font-mono text-grey" style="line-height: 2;">
+      NOT A LACK OF INFORMATION.<br>
+      NOT A LACK OF TALENT.<br>
+      A LACK OF ENVIRONMENT.
+    </div>
+  </div>
+  <div class="split-right reveal delay-1">
+    <div class="huge-quote cinematic-quote" id="cinematic-quote">
+      <span class="word">Most</span> <span class="word">ambitious</span> <span class="word">people</span> <span class="word">have</span> <span class="word">the</span> <span class="word">same</span> <span class="word">problem.</span> <span class="word">You</span> <span class="word">can</span> <span class="word">spend</span> <span class="word">years</span> <span class="word">figuring</span> <span class="word">things</span> <span class="word">out</span> <span class="word">alone,</span> <span class="word">or</span> <span class="word">you</span> <span class="word">can</span> <span class="word">build</span> <span class="word">alongside</span> <span class="word">people</span> <span class="word">who</span> <span class="word">are</span> <span class="word">actively</span> <span class="word text-accent">shipping,</span> <span class="word text-accent">learning,</span> <span class="word text-accent">selling,</span> <span class="word text-accent">and</span> <span class="word text-accent">growing.</span>
+    </div>
+    <div class="font-mono text-grey reveal delay-3" style="margin-top: 60px; border-top: 1px solid #333; padding-top: 30px; max-width: 400px; line-height: 1.8;">
+      W Society exists to solve that. The right room changes everything.
+    </div>
+  </div>
+</section>
+
+<!-- 03. WHAT IS W SOCIETY -->
+<section class="act-section" id="identity">
+  <h2 class="font-cinema act-header reveal">WHAT IS W SOCIETY?</h2>
+  <div class="font-serif text-grey reveal delay-1" style="font-size: clamp(24px, 3vw, 42px); max-width: 1100px; margin-bottom: 10vh; line-height: 1.4;">
+    A private ecosystem for ambitious builders, operators, creators, entrepreneurs, and future leaders. A room where serious people become more capable because of who they are surrounded by.
+  </div>
+  
+  <div class="act-grid reveal delay-2">
+    <div class="act-card">
+      <div class="act-num">01</div>
+      <div class="font-mono text-accent" style="margin-bottom: 15px;">NOT A NETWORKING GROUP</div>
+      <div class="act-title">Weekly War Rooms</div>
+      <div class="act-desc">Real problems. Real decisions. Real accountability. One member presents a challenge. The room helps solve it. Everyone leaves with actions — not motivation, not inspiration. Actions.</div>
+    </div>
+    <div class="act-card">
+      <div class="act-num">02</div>
+      <div class="font-mono text-accent" style="margin-bottom: 15px;">NOT A DISCORD SERVER</div>
+      <div class="act-title">Skill Sprints</div>
+      <div class="act-desc">Execution challenges designed to force growth. Outreach. Sales. Negotiation. Building. Communication. Every sprint has an outcome. Every outcome is measurable.</div>
+    </div>
+    <div class="act-card">
+      <div class="act-num">03</div>
+      <div class="font-mono text-accent" style="margin-bottom: 15px;">NOWHERE TO HIDE</div>
+      <div class="act-title">Member Dossiers</div>
+      <div class="act-desc">Every member maintains a live profile: what they're building, their goals, their progress, what they need. Everyone knows who is moving. Everyone knows who is stuck.</div>
+    </div>
+    <div class="act-card">
+      <div class="act-num">04</div>
+      <div class="font-mono text-accent" style="margin-bottom: 15px;">OPPORTUNITY FLOW</div>
+      <div class="act-title">The Deal Board</div>
+      <div class="act-desc">Opportunities move through the room first. Clients. Partnerships. Projects. Referrals. Before opportunities go public, they go to members.</div>
+    </div>
+    <div class="act-card">
+      <div class="act-num">05</div>
+      <div class="font-mono text-accent" style="margin-bottom: 15px;">NOT CONTENT. A CURRICULUM.</div>
+      <div class="act-title">The W Library</div>
+      <div class="act-desc">Curated frameworks, books, case studies, mental models, and lessons designed for ambitious people.</div>
+    </div>
+    <div class="act-card">
+      <div class="act-num">06</div>
+      <div class="font-mono text-accent" style="margin-bottom: 15px;">THE RECKONING</div>
+      <div class="act-title">Monthly Verdict</div>
+      <div class="act-desc">Every member is measured. Not against perfection. Against progress. Show up. Build. Earn. Contribute. Or risk losing your seat.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. DEMOGRAPHIC -->
+<section class="audience-section" id="audience">
+  <div class="font-mono text-accent reveal" style="margin-bottom: 2vh;">THE DEMOGRAPHIC</div>
+  <h2 class="font-cinema act-header reveal delay-1" style="border:none; margin-bottom: 0;">WHO IS THIS FOR?</h2>
+  
+  <div class="font-serif text-grey reveal delay-1" style="font-size: clamp(20px, 2vw, 32px); max-width: 900px; margin-top: 5vh; line-height: 1.5;">
+    W Society is strictly curated. The value of this room depends entirely on the caliber of the individuals inside it. We are looking for those who execute. We actively reject those who merely consume.
+  </div>
+
+  <div class="audience-grid">
+    <div class="audience-col reveal delay-2">
+      <h3>QUALIFIERS</h3>
+      <ul class="audience-list">
+        <li><strong>Builders & Operators</strong> You are actively running a business, scaling a product, or managing operations.</li>
+        <li><strong>Founders & Creators</strong> You have skin in the game and are putting your work out into the market.</li>
+        <li><strong>Relentless Executioners</strong> You don't just talk about ideas; you are actively testing, failing, and iterating in reality.</li>
+        <li><strong>The Unreasonably Ambitious</strong> People who know they are capable of more and are willing to put in the unnatural effort required to prove it.</li>
+      </ul>
+    </div>
+    <div class="audience-col reveal delay-3">
+      <h3 style="color: #444; border-color: #222;">DISQUALIFIERS</h3>
+      <ul class="audience-list disqualify">
+        <li><strong>Motivation Seekers</strong> If you need to be hyped up to do the work, this room will crush you.</li>
+        <li><strong>Shortcut Hunters</strong> People looking for hacks instead of building solid foundations.</li>
+        <li><strong>Spectators</strong> Those who want to watch others build without contributing their own insights or progress.</li>
+        <li><strong>Status Seekers</strong> People who want the prestige of being in the room but refuse to uphold the standard.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 05. THE STANDARD -->
+<section class="standard-section reveal">
+  <div class="font-mono text-accent" style="margin-bottom: 30px;">EXCLUSIVITY</div>
+  <h2 class="font-cinema standard-title text-white">THE STANDARD</h2>
+  <div class="font-serif text-white" style="font-size: clamp(28px, 4vw, 56px); text-align: center; line-height: 1.25; max-width: 900px; margin: 0 auto;">
+    No passengers. No dead weight. No mediocrity.<br><br>
+    <span class="text-grey" style="font-size: 0.65em; line-height: 1.5; display: block; font-style: italic;">
+      Membership is intentionally restricted. Every applicant goes through a review process. Not everyone gets accepted. And that's the point. W Society is not something you join. It's something you help build.
+    </span>
+  </div>
+</section>
+
+<!-- 06. APPLY FORM -->
+<section class="apply-section" id="apply">
+  <div class="font-mono text-grey reveal">FINAL STEP</div>
+  <h2 class="font-cinema act-header reveal delay-1" style="border: none; margin-bottom: 15px; color: #fff;">SUBMIT DOSSIER</h2>
+  <div class="font-serif text-grey reveal delay-2" style="font-size: clamp(20px, 2vw, 32px); text-align: center; max-width: 600px; font-style: italic;">
+    Acceptance is earned. Not guaranteed.
+  </div>
+  
+  <div class="form-container reveal delay-3">
+    <form id="applicationForm" onsubmit="event.preventDefault(); alert('Dossier Submitted. You will be reviewed.');">
+      <div class="form-group">
+        <input type="text" id="fname" required>
+        <label for="fname">Full Legal Name</label>
+      </div>
+      <div class="form-group">
+        <input type="email" id="email" required>
+        <label for="email">Primary Email</label>
+      </div>
+      <div class="form-group">
+        <textarea id="building" rows="1" required></textarea>
+        <label for="building">What are you actively building?</label>
+      </div>
+      <div class="form-group">
+        <textarea id="why" rows="1" required></textarea>
+        <label for="why">Why do you require this room?</label>
+      </div>
+      <button type="submit" class="submit-btn">TRANSMIT APPLICATION</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>W SOCIETY © 2026</div>
+  <div class="text-accent">CONFIDENTIAL · ANTI MEDIOCRE</div>
+</footer>
+
+<script>
+// 1. Scroll Progress HUD
+window.addEventListener('scroll', () => {
+  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = (winScroll / height) * 100;
+  document.getElementById('progressBar').style.width = scrolled + '%';
+});
+
+// 2. Cinematic Intersection Observer Reveals
+const observerOptions = {
+  root: null,
+  rootMargin: '0px 0px -10% 0px',
+  threshold: 0.1
+};
+
+const observer = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('active');
+      observer.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.reveal, .fade, .cinematic-quote').forEach(el => {
+  observer.observe(el);
+});
+
+// 3. Cinematic Word Reveal Setup
+const quoteWords = document.querySelectorAll('.cinematic-quote .word');
+quoteWords.forEach((word, index) => {
+  word.style.transitionDelay = `${index * 0.05}s`;
+});
+
+// 4. Auto-resize textareas based on content
+const tx = document.getElementsByTagName("textarea");
+for (let i = 0; i < tx.length; i++) {
+  tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+  tx[i].addEventListener("input", OnInput, false);
+}
+function OnInput() {
+  this.style.height = 0;
+  this.style.height = (this.scrollHeight) + "px";
+}
+
+// 5. 3D Card Tilt Effect
+document.querySelectorAll('.act-card, .form-container').forEach(el => {
+  el.style.transformOrigin = "center center";
+  el.addEventListener('mousemove', (e) => {
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -8; // Max 8 deg
+    const rotateY = ((x - centerX) / centerX) * 8;
+    
+    el.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+    el.style.transition = 'transform 0.1s ease-out';
+    el.style.zIndex = 10;
+    el.style.boxShadow = `${-rotateY * 2}px ${rotateX * 2}px 30px rgba(0,0,0,0.8)`;
+  });
+  
+  el.addEventListener('mouseleave', () => {
+    el.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    el.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease';
+    el.style.zIndex = 1;
+    el.style.boxShadow = 'none';
+  });
+});
+
+// 6. Cinematic Scroll Parallax (3D Depth)
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const heroTitle = document.querySelector('.hero-title');
+  const heroSub = document.querySelector('.hero-sub');
+  
+  if(heroTitle && scrolled < window.innerHeight) {
+    // Zoom out and fade out the hero text as you scroll down
+    heroTitle.style.transform = `scaleY(1.15) scale(${1 + scrolled * 0.001}) translateY(${scrolled * 0.4}px)`;
+    heroTitle.style.opacity = 1 - (scrolled / window.innerHeight) * 1.5;
+    heroSub.style.transform = `translateY(${scrolled * 0.2}px)`;
+    heroSub.style.opacity = 1 - (scrolled / window.innerHeight) * 1.5;
+  }
+});
+</script>
+
+</body>
+</html>
